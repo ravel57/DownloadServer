@@ -4,7 +4,7 @@ WORKDIR /usr/src/node
 RUN git clone https://github.com/ravel57/download-server-front.git
 WORKDIR /usr/src/node/download-server-front
 RUN npm install
-RUN vite build
+RUN npm run build
 
 FROM gradle:jdk22-alpine AS gradle
 COPY --chown=gradle:gradle . /home/gradle/
