@@ -42,7 +42,7 @@ public class FileService {
 		File directory = new File(filesPath);
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
-				throw new IOException("Не удалось создать директорию: " + filesPath);
+				throw new IOException("Не удалось создать директорию: %s".formatted(filesPath));
 			}
 		}
 		File file = new File(directory, Objects.requireNonNull(multipartFile.getOriginalFilename()));
