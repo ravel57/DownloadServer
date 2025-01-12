@@ -1,4 +1,4 @@
-FROM gradle:8.7.0-jdk21-alpine AS gradle
+FROM gradle:jdk22-alpine AS gradle
 COPY --chown=gradle:gradle . /home/gradle/
 WORKDIR /home/gradle/
 RUN gradle bootJar
