@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 public class DownloadServerApplication {
 
 	public static void main(String[] args) {
-		ApplicationContext applicationContext = SpringApplication.run(DownloadServerApplication.class, args);
+		SpringApplication.run(DownloadServerApplication.class, args);
 	}
 
 }
