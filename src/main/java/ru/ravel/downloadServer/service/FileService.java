@@ -47,7 +47,7 @@ public class FileService {
 		}
 		File file = new File(directory, Objects.requireNonNull(multipartFile.getOriginalFilename()));
 		multipartFile.transferTo(file);
-		String key = new Random().ints(40, 0, ALPHABET.length())
+		String key = new Random().ints(10, 0, ALPHABET.length())
 				.mapToObj(ALPHABET::charAt)
 				.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
 				.toString();

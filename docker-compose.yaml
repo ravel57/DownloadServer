@@ -22,8 +22,9 @@ services:
       - 56484
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/
+      - FILES=/files
     volumes:
-      - /files:/files
+      - /mnt/zfs-storage/download-server:/files
 
 networks:
   default:

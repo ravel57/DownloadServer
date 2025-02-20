@@ -25,6 +25,7 @@ public class MainController {
 			@PathVariable String secretKey,
 			HttpServletResponse response
 	) {
+		if (secretKey.equals("favicon.ico")) return ResponseEntity.ok().build();
 		try {
 			Path file = fileService.getFileBySecretKey(secretKey);
 			if (file != null && Files.exists(file)) {
