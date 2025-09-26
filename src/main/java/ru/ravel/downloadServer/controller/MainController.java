@@ -25,10 +25,14 @@ public class MainController {
 	private final FileService fileService;
 
 	@GetMapping(value = "/{secretKey}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<?> downloadFileBySecretKey(@PathVariable String secretKey) throws IOException {
-		if ("favicon.ico".equals(secretKey)) return ResponseEntity.notFound().build();
+	public ResponseEntity<StreamingResponseBody> downloadFileBySecretKey(@PathVariable String secretKey) throws IOException {
+		if ("favicon.ico".equals(secretKey)) {
+			return ResponseEntity.notFound().build();
+		}
 		Path file = fileService.getFileBySecretKey(secretKey);
-		if (file == null || !Files.exists(file)) return ResponseEntity.notFound().build();
+		if (file == null || !Files.exists(file)) {
+			return ResponseEntity.notFound().build();
+		}
 		long size = Files.size(file);
 		String filename = fileService.translateFileName(file);
 		String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8);
