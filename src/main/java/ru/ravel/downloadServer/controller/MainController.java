@@ -8,12 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.ravel.downloadServer.service.FileService;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-
-import static java.net.URLEncoder.encode;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 @RestController
@@ -42,9 +41,9 @@ public class MainController {
 		}
 		response.setContentType(contentType);
 		response.setContentLengthLong(Files.size(file));
-		response.setHeader(
-				"Content-Disposition",
-				"attachment; filename=\"%s\"; filename*=UTF-8''%s".formatted(filename, encode(filename, UTF_8))
+		String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+		response.setHeader("Content-Disposition",
+				"attachment; filename=\"%s\"; filename*=UTF-8''%s".formatted(filename, encoded)
 		);
 		try (var in = Files.newInputStream(file); var out = response.getOutputStream()) {
 			in.transferTo(out);
