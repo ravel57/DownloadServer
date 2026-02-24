@@ -19,7 +19,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class FileService {
 
-	private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890$-_+!";
+	private static final String ALPHABET = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ1234567890$-_+!";
 
 	@Value("${files-path}")
 	private String filesPath;
