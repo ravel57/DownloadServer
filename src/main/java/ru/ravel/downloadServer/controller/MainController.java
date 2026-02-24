@@ -2,9 +2,12 @@ package ru.ravel.downloadServer.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import ru.ravel.downloadServer.service.FileService;
 
 import java.io.IOException;
@@ -24,31 +27,33 @@ public class MainController {
 
 
 	@GetMapping("/{secretKey}")
-	public void downloadFileBySecretKey(
-			@PathVariable String secretKey,
-			HttpServletResponse response
-	) throws IOException {
-		if ("favicon.ico".equals(secretKey)) return;
+	public ResponseEntity<StreamingResponseBody> downloadFileBySecretKey(@PathVariable String secretKey) throws IOException {
+		if ("favicon.ico".equals(secretKey)) {
+			return ResponseEntity.notFound().build();
+		}
 		Path file = fileService.getFileBySecretKey(secretKey);
 		if (file == null || !Files.exists(file)) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
+			return ResponseEntity.notFound().build();
 		}
+		long size = Files.size(file);
 		String filename = fileService.translateFileName(file);
 		String contentType = Files.probeContentType(file);
-		if (contentType == null || contentType.isBlank()) {
-			contentType = "application/octet-stream";
-		}
-		response.setContentType(contentType);
-		response.setContentLengthLong(Files.size(file));
-		String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
-		response.setHeader("Content-Disposition",
-				"attachment; filename=\"%s\"; filename*=UTF-8''%s".formatted(filename, encoded)
-		);
-		try (var in = Files.newInputStream(file); var out = response.getOutputStream()) {
-			in.transferTo(out);
-			out.flush();
-		}
+		MediaType mediaType = (contentType == null || contentType.isBlank())
+				? MediaType.APPLICATION_OCTET_STREAM
+				: MediaType.parseMediaType(contentType);
+		String filenameStar = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+		String contentDisposition = "attachment; filename=\"%s\"; filename*=UTF-8''%s".formatted(filename.replace("\"", "'"), filenameStar);
+		StreamingResponseBody body = outputStream -> {
+			try (var in = Files.newInputStream(file)) {
+				in.transferTo(outputStream);
+			}
+		};
+		return ResponseEntity.ok()
+				.contentType(mediaType)
+				.contentLength(size)
+				.header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+				.header(HttpHeaders.ACCEPT_RANGES, "none")
+				.body(body);
 	}
 
 
