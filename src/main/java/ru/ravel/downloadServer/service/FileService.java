@@ -28,7 +28,11 @@ public class FileService {
 
 
 	public Path getFileBySecretKey(String secretKey) {
-		return Paths.get(fileRepository.findByKey(secretKey).getPath());
+		DownloadFile downloadFile = fileRepository.findByKey(secretKey);
+		if (downloadFile == null || downloadFile.getPath() == null) {
+			return null;
+		}
+		return Paths.get(downloadFile.getPath());
 	}
 
 
